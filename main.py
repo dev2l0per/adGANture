@@ -1,9 +1,15 @@
 from flask import (
-    Flask, render_template, request, Response, jsonify
+    Flask, render_template, request, Response, jsonify, send_file
 )
 import requests
+from requests_toolbelt import MultipartEncoder
+from enum import Enum
 
 app = Flask(__name__)
+
+class FileType(Enum):
+    FILE = 1
+    STRING = 2
 
 models = {
     "Cartoonize": {
@@ -11,10 +17,10 @@ models = {
             "url": "https://main-jo-jo-gan-dev2l0per.endpoint.ainize.ai",
             "endpoints": {
                 "jojogan": {
-                    "parameters": [
-                        "file",
-                        "pretrained",
-                    ],
+                    "parameters": {
+                        "file": "file",
+                        "pretrained": "string",
+                    },
                 },
             },
         },
@@ -22,10 +28,10 @@ models = {
             "url": "https://main-animegan2-pytorch-dev2l0per.endpoint.ainize.ai",
             "endpoints": {
                 "animeganv2": {
-                    "parameters": [
-                        "file",
-                        "pretrained",
-                    ],
+                    "parameters": {
+                        "file": "file",
+                        "pretrained": "string",
+                    },
                 }
             }
         },
@@ -33,10 +39,10 @@ models = {
             "url": "https://master-stargan-v2-frontend-gkswjdzz.endpoint.ainize.ai",
             "endpoints": {
                 "predict": {
-                    "parameters": [
-                        "source",
-                        "check_model",
-                    ],
+                    "parameters": {
+                        "source": "file",
+                        "check_model": "string",
+                    },
                 },
             },
         },
@@ -44,14 +50,14 @@ models = {
             "url": "https://master-ugatit-kmswlee.endpoint.ainize.ai",
             "endpoints": {
                 "selfie2anime": {
-                    "parameters" [
-                        "file",
-                    ],
+                    "parameters": {
+                        "file": "file",
+                    },
                 },
                 "anime2selfie": {
-                    "parameters": [
-                        "file",
-                    ],
+                    "parameters": {
+                        "file": "file",
+                    },
                 },
             },
         },
@@ -59,10 +65,10 @@ models = {
             "url": "https://master-white-box-cartoonization-psi1104.endpoint.ainize.ai",
             "endpoints": {
                 "predict": {
-                    "parameters": [
-                        "file_type",
-                        "source",
-                    ],
+                    "parameters": {
+                        "file_type": "string",
+                        "source": "file",
+                    },
                 },
             },
         },
@@ -79,14 +85,25 @@ def gan():
     
     try:
         model = models[selectedCategory][modelName]
-        requestForm = dict()
-        requestForm["endpoint"] = request.form["endpoint"]
-        for parameter in model["endpoints"][requestForm["endpoint"]]["parameters"]:
-            requestForm[parameter] = request.form[parameter]
+        endpoint = request.form["endpoint"]
+        requestFile = dict()
+        requestData = dict()
+        for k, v in model["endpoints"][endpoint]["parameters"].items():
+            if v == "string":
+                requestData[k] = request.form[k]
+            elif v == "file":
+                requestFile[k] = (request.files[k].filename, request.files[k], request.files[k].content_type)
     except:
         return Response("Error", status=400)
 
-    return "ok"
+    print(requestFile)
+
+    response = requests.post(url=str(model["url"] + "/" + endpoint),
+        files=requestFile,
+        data=requestData
+    )
+
+    return send_file(response.content, mimetype='image/jpeg')
 
 @app.route("/category", methods=["GET"])
 def getCategory():
@@ -99,15 +116,15 @@ def getCategory():
 def getModelsInCategory(category):
     if category not in models:
         return Response("Not Found Category", status=404)
-    return Response(models[category], status=200)
+    return jsonify(models[category]), 200
 
 @app.route("/")
 def main():
     return render_template("index.html")
 
-@app.route("healthz", methods=["GET"])
+@app.route("/healthz", methods=["GET"])
 def healthCheck():
     return Response("OK", status=200)
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port='5000')
+    app.run(debug=True, host='0.0.0.0', port='1234')
