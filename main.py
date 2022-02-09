@@ -1,15 +1,13 @@
+from io import BytesIO
 from flask import (
     Flask, render_template, request, Response, jsonify, send_file
 )
 import requests
 from requests_toolbelt import MultipartEncoder
 from enum import Enum
+import json
 
 app = Flask(__name__)
-
-class FileType(Enum):
-    FILE = 1
-    STRING = 2
 
 models = {
     "Cartoonize": {
@@ -93,32 +91,31 @@ def gan():
                 requestData[k] = request.form[k]
             elif v == "file":
                 requestFile[k] = (request.files[k].filename, request.files[k], request.files[k].content_type)
+                mimeType = request.files[k].content_type
     except:
         return Response("Error", status=400)
-
-    print(requestFile)
 
     response = requests.post(url=str(model["url"] + "/" + endpoint),
         files=requestFile,
         data=requestData
     )
 
-    return send_file(response.content, mimetype='image/jpeg')
+    return send_file(BytesIO(response.content), mimetype=mimeType)
 
 @app.route("/category", methods=["GET"])
 def getCategory():
     result = []
     for k, v in models.items():
         result.append(k)
-    return Response(result, status=200)
+    return jsonify(result), 200
 
-@app.route("/category/<category>")
+@app.route("/category/<category>", methods=["GET"])
 def getModelsInCategory(category):
     if category not in models:
         return Response("Not Found Category", status=404)
     return jsonify(models[category]), 200
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def main():
     return render_template("index.html")
 
