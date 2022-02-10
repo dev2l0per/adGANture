@@ -115,6 +115,14 @@ def getModelsInCategory(category):
         return Response("Not Found Category", status=404)
     return jsonify(models[category]), 200
 
+@app.route("/category/<category>/<model>", methods=["GET"])
+def getModel(category, model):
+    if category not in models:
+        return Response("Not Found Category", status=404)
+    if model not in models[category]:
+        return Response("Not Found Model", status=404)
+    return jsonify(models[category][model]), 200
+
 @app.route("/", methods=["GET"])
 def main():
     return render_template("index.html")

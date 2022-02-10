@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <title>adGANture</title>
+    <style type="text/css">
+      .hidden {
+        display: none;
+      }
+    </style>
 </head>
 
 <body>
@@ -28,33 +33,177 @@
                     </li>
                 </ul>
             </div>
+            <div class="container">
+              <hr>
+              <div class="nav nav-pills flex-row mb-auto dropdown justify-content-evenly">
+                <a href="#" class="d-flex align-items-center text-black text-decoration-none dropdown-toggle" id="dropdown-category" data-bs-toggle="dropdown" aria-expanded="false">
+                  <strong id="selected-category">Select Category</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-macos mx-0 border-0 shadow" id="category-list" style="width: 250px;" aria-labelledby="dropdown-category">
+                </ul>
+                <a href="#" class="d-flex align-items-center text-black text-decoration-none dropdown-toggle" id="dropdown-model" data-bs-toggle="dropdown" aria-expanded="false">
+                  <strong id="selected-model">Select Model</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-macos mx-0 border-0 shadow" id="model-list" style="width: 250px;" aria-labelledby="dropdown-model">
+                </ul>
+                <a href="#" class="d-flex align-items-center text-black text-decoration-none dropdown-toggle" id="dropdown-endpoint" data-bs-toggle="dropdown" aria-expanded="false">
+                  <strong id="selected-endpoint">Select Endpoint</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-macos mx-0 border-0 shadow" id="endpoint-list" style="width: 250px;" aria-labelledby="dropdown-endpoint">
+                </ul>
+              </div>
+              <hr>
+            </div>
             <div class="container" style="display: flex; justify-content: center; margin-top: 20px;">
                 <form id="file-upload-form" class="uploader" style="margin-right: 5%">
-                    <input id="input-image" type="file" name="fileUpload" accept="image/*" />
-                    <img id="preview-image" src="" alt="Upload Image" />
+                  <div class="row">
+                    <div class="col">
+                      <input id="input-image" type="file" name="" accept="image/*" />
+                      <img id="preview-image" src="" alt="Upload Image" style="width: 300px; height: 300px;" />
+                    </div>
+                  </div>
                 </form>
             </div>
         </div>
-        <div class="container">
-          <div class="nav nav-pills flex-column mb-auto dropdown">
-            <a href="#" class="d-flex align-items-center text-black text-decoration-none dropdown-toggle" id="dropdown-model" data-bs-toggle="dropdown" aria-expanded="false">
-                <strong id="selected-category">Select Category</strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-macos mx-0 border-0 shadow" id="category-list" style="width: 250px;" aria-labelledby="dropdown-model">
-            </ul>
-            <hr>
-          </div>
-        </div>
+        
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script>
         const inputImage = document.getElementById('input-image');
+        const selectedCategory = document.getElementById('selected-category');
+        const selectedModel = document.getElementById('selected-model');
+        const selectedEndpoint = document.getElementById('selected-endpoint');
+        let modelInfo = {};
+
+        const selectCategoryObserver = new MutationObserver((mutations) => {
+          const category = mutations[0].target.textContent;
+
+          fetch('/category/' + category, {
+            method: 'GET',
+          }).then((response) => {
+            if (response.status == 200) {
+              return response
+            } else {
+              throw Error('Server Error');
+            }
+          }).then((response) => {
+            return response.json();
+          }).then((response) => {
+            const modelList = document.getElementById('model-list');
+            modelList.innerHTML = '';
+            selectedModel.textContent = 'Select Model';
+            selectedEndpoint.textContent = 'Select Endpoint';
+
+            for (model in response) {
+              const li = document.createElement('li');
+              const button = document.createElement('button');
+
+              button.classList.add('dropdown-item');
+              button.setAttribute('onclick', 'selectItem(this);');
+              button.textContent = model;
+              li.append(button);
+              modelList.appendChild(button);
+            }
+          });
+        });
+
+        const selectModelObserver = new MutationObserver((mutations) => {
+          const model = mutations[0].target.textContent;
+
+          if  (model != 'Select Model') {
+            fetch('/category/' + selectedCategory.textContent + '/' + model, {
+              method: 'GET',
+            }).then((response) => {
+              if (response.status == 200) {
+                return response;
+              } else {
+                throw Error('Server Error');
+              }
+            }).then((response) => {
+              return response.json();
+            }).then((response) => {
+              const endpointList = document.getElementById('endpoint-list');
+              endpointList.innerHTML = '';
+              selectedEndpoint.textContent = 'Select Endpoint';
+              modelInfo = response;
+  
+              for (endpoint in response['endpoints']) {
+                const li = document.createElement('li');
+                const button = document.createElement('button');
+  
+                button.classList.add('dropdown-item');
+                button.setAttribute('onclick', 'selectItem(this);');
+                button.textContent = endpoint;
+                li.append(button);
+                endpointList.appendChild(button);
+              }
+            });
+          }
+        });
+
+        const selectEndpointObserver = new MutationObserver((mutations) => {
+          const endpoint = mutations[0].target.textContent;
+          const fileUploadForm = document.getElementById('file-upload-form');
+          const existedRow = fileUploadForm.getElementsByClassName('row');
+          
+          for (let i = 1; i < existedRow.length; ++i) {
+            fileUploadForm.removeChild(existedRow[i]);
+          }
+          
+          if (modelInfo['endpoints'][endpoint] != undefined) {
+            const parameters = modelInfo['endpoints'][endpoint]['parameters'];
+            const submitButton = document.createElement('a');
+
+            fileUploadForm.classList.remove('hidden');
+
+            for (parameter in parameters) {
+              if (parameters[parameter] == 'file') {
+                inputImage.setAttribute('name', parameter);
+              } else if (parameters[parameter] == 'string') {
+                const rowDiv = document.createElement('div');
+                const label = document.createElement('label');
+                const colDiv = document.createElement('div');
+                const input = document.createElement('input');
+
+                rowDiv.classList.add('row');
+                label.classList.add('col-sm-2', 'col-form-label');
+                label.setAttribute('for', parameter);
+                label.textContent = parameter;
+                colDiv.classList.add('col-sm-10');
+                input.setAttribute('type', 'text');
+                input.classList.add('form-control');
+                input.id = parameter;
+
+                colDiv.append(input);
+                rowDiv.append(label, colDiv);
+                fileUploadForm.append(rowDiv);
+              }
+            }
+
+            submitButton.classList.add('btn', 'btn-primary');
+            submitButton.textContent = 'Submit';
+            submitButton.setAttribute('onclick', 'submitForm();');
+
+            fileUploadForm.append(submitButton);
+
+          } else {
+            fileUploadForm.classList.add('hidden');
+          }
+        });
+
+        const observerConfig = {
+          childList: true,
+        };
+        
+        selectCategoryObserver.observe(selectedCategory, observerConfig);
+        selectModelObserver.observe(selectedModel, observerConfig);
+        selectEndpointObserver.observe(selectedEndpoint, observerConfig);
         
         fetch("/category", {
-          method: 'GET'
+          method: 'GET',
         }).then((response) => {
           if (response.status == 200) {
-            return response
+            return response;
           } else {
             throw Error('Server Error');
           }
@@ -68,6 +217,7 @@
             const button = document.createElement('button');
 
             button.classList.add('dropdown-item');
+            button.setAttribute('onclick', 'selectItem(this);');
             button.textContent = category;
             li.append(button);
             categoryList.appendChild(button);
@@ -87,20 +237,11 @@
             }
         }
 
-        function selectCategory(category) {
-          fetch("/category/" + category, {
-            method: 'GET',
-          }).then((response) => {
-            if (response.status == 200) {
-              return response
-            } else {
-              throw Error('Server Error');
-            }
-          }).then((response) => {
-            return response.json();
-          }).then((response) => {
-            // append model list in cateogry
-          })
+        function selectItem(element) {
+          const dropDownList = element.parentElement;
+          const selectedItem = document.getElementById(dropDownList.getAttribute('aria-labelledby'));
+
+          selectedItem.firstElementChild.innerHTML = element.textContent;
         }
 
         inputImage.addEventListener('change', (e) => {
