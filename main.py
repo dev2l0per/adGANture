@@ -15,9 +15,11 @@ models = {
             "url": "https://main-jo-jo-gan-dev2l0per.endpoint.ainize.ai",
             "endpoints": {
                 "jojogan": {
-                    "parameters": {
-                        "file": "file",
-                        "pretrained": "string",
+                    "file": {
+                        "file": [],
+                    },
+                    "string": {
+                        "pretrained": [],
                     },
                 },
             },
@@ -26,20 +28,32 @@ models = {
             "url": "https://main-animegan2-pytorch-dev2l0per.endpoint.ainize.ai",
             "endpoints": {
                 "animeganv2": {
-                    "parameters": {
-                        "file": "file",
-                        "pretrained": "string",
+                    "file": {
+                        "file": [],
                     },
-                }
-            }
+                    "string": {
+                        "pretrained": [
+                            "celeba_distill",
+                            "face_paint_512_v1",
+                            "face_paint_512_v2",
+                            "paprika",
+                        ],
+                    },
+                },
+            },
         },
         "StarGANv2": {
             "url": "https://master-stargan-v2-frontend-gkswjdzz.endpoint.ainize.ai",
             "endpoints": {
                 "predict": {
-                    "parameters": {
-                        "source": "file",
-                        "check_model": "string",
+                    "file": {
+                        "source": [],
+                    },
+                    "string": {
+                        "check_model": [
+                            "Human Face",
+                            "Animal Face",
+                        ],
                     },
                 },
             },
@@ -48,13 +62,13 @@ models = {
             "url": "https://master-ugatit-kmswlee.endpoint.ainize.ai",
             "endpoints": {
                 "selfie2anime": {
-                    "parameters": {
-                        "file": "file",
+                    "file": {
+                        "file": [],
                     },
                 },
                 "anime2selfie": {
-                    "parameters": {
-                        "file": "file",
+                    "file": {
+                        "file": [],
                     },
                 },
             },
@@ -63,9 +77,14 @@ models = {
             "url": "https://master-white-box-cartoonization-psi1104.endpoint.ainize.ai",
             "endpoints": {
                 "predict": {
-                    "parameters": {
-                        "file_type": "string",
-                        "source": "file",
+                    "file": {
+                        "source": [],
+                    },
+                    "string": {
+                        "file_type": [
+                            "image",
+                            "video",
+                        ],
                     },
                 },
             },
@@ -80,18 +99,20 @@ def gan():
         modelName = request.form['model']
     except:
         return Response("Empty Field", status=400)
-    
+
     try:
         model = models[selectedCategory][modelName]
         endpoint = request.form["endpoint"]
         requestFile = dict()
         requestData = dict()
-        for k, v in model["endpoints"][endpoint]["parameters"].items():
-            if v == "string":
-                requestData[k] = request.form[k]
-            elif v == "file":
-                requestFile[k] = (request.files[k].filename, request.files[k], request.files[k].content_type)
-                mimeType = request.files[k].content_type
+        for type, parameters in model["endpoints"][endpoint].items():
+            if type == "string":
+                for parameter in parameters.keys():
+                    requestData[parameter] = request.form[parameter]
+            elif type == "file":
+                for parameter in parameters.keys():
+                    requestFile[parameter] = (request.files[parameter].filename, request.files[parameter], request.files[parameter].content_type)
+                    mimeType = request.files[parameter].content_type
     except:
         return Response("Error", status=400)
 
@@ -99,8 +120,6 @@ def gan():
         files=requestFile,
         data=requestData
     )
-
-    print(requestData)
 
     if response.status_code != 200:
         return Response("Model API Error", status=response.status_code)

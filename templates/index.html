@@ -29,7 +29,13 @@
                 <h3 style="margin-bottom: 20px;">How to use ?</h3>
                 <ul class="list-group">
                     <li class="list-group-item">
-                        1. Upload Your Image for Cartoonize
+                      1. Select Category, Model, Endpoint
+                    </li>
+                    <li class="list-group-item">
+                      2. Fill in form according to format
+                    </li>
+                    <li class="list-group-item">
+                      3. Click Submit !
                     </li>
                 </ul>
             </div>
@@ -155,32 +161,46 @@
           }
           
           if (modelInfo['endpoints'][endpoint] != undefined) {
-            const parameters = modelInfo['endpoints'][endpoint]['parameters'];
+            const parameters = modelInfo['endpoints'][endpoint];
             const submitButton = document.createElement('button');
 
             fileUploadForm.classList.remove('hidden');
 
             for (parameter in parameters) {
-              if (parameters[parameter] == 'file') {
-                inputImage.setAttribute('name', parameter);
-              } else if (parameters[parameter] == 'string') {
-                const rowDiv = document.createElement('div');
-                const label = document.createElement('label');
-                const colDiv = document.createElement('div');
-                const input = document.createElement('input');
+              if (parameter == 'file') {
+                for (parameterName in parameters[parameter]) {
+                  inputImage.setAttribute('name', parameterName);
+                }
+              } else if (parameter == 'string') {
+                for (parameterName in parameters[parameter]) {
+                  const rowDiv = document.createElement('div');
+                  const label = document.createElement('label');
+                  const colDiv = document.createElement('div');
+                  const select = document.createElement('select');
+  
+                  rowDiv.classList.add('row');
+                  label.classList.add('col-sm-2', 'col-form-label');
+                  label.setAttribute('for', parameterName);
+                  label.textContent = parameterName;
+                  colDiv.classList.add('col-sm-10');
+                  select.setAttribute('type', 'text');
+                  select.classList.add('form-select');
+                  select.id = parameterName;
 
-                rowDiv.classList.add('row');
-                label.classList.add('col-sm-2', 'col-form-label');
-                label.setAttribute('for', parameter);
-                label.textContent = parameter;
-                colDiv.classList.add('col-sm-10');
-                input.setAttribute('type', 'text');
-                input.classList.add('form-control');
-                input.id = parameter;
+                  for (example of parameters[parameter][parameterName]) {
+                    console.log(example)
+                    const option = document.createElement('option');
 
-                colDiv.append(input);
-                rowDiv.append(label, colDiv);
-                fileUploadForm.append(rowDiv);
+                    option.value = example;
+                    option.textContent = example;
+
+                    select.append(option);
+                  }
+  
+                  colDiv.append(select);
+                  rowDiv.append(label, colDiv);
+                  fileUploadForm.append(rowDiv);
+                }
               }
             }
             const rowDiv = document.createElement('div');
@@ -268,10 +288,11 @@
           formData.append('model', selectedModel.textContent);
           formData.append('endpoint', selectedEndpoint.textContent);
           formData.append(inputImage.getAttribute('name'), inputImage.files[0]);
-          
+
           for (let i = 1; i < formRowList.length - 1; ++i) {
-            const input = formRowList[i].querySelector('input');
-            formData.append(input.id, input.value);
+            const formSelect = formRowList[i].querySelector('.form-select');
+            console.log(formSelect.value);
+            formData.append(formSelect.id, formSelect.value);
           }
 
           fetch('/gan', {
