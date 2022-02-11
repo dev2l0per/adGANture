@@ -3,9 +3,6 @@ from flask import (
     Flask, render_template, request, Response, jsonify, send_file
 )
 import requests
-from requests_toolbelt import MultipartEncoder
-from enum import Enum
-import json
 
 app = Flask(__name__)
 
@@ -151,7 +148,7 @@ def getModel(category, model):
 def main():
     return render_template("index.html")
 
-@app.route("/healthz", methods=["GET"])
+@app.route("/health", methods=["GET"])
 def healthCheck():
     return Response("OK", status=200)
 
