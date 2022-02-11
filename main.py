@@ -100,6 +100,11 @@ def gan():
         data=requestData
     )
 
+    print(requestData)
+
+    if response.status_code != 200:
+        return Response("Model API Error", status=response.status_code)
+
     return send_file(BytesIO(response.content), mimetype=mimeType)
 
 @app.route("/category", methods=["GET"])

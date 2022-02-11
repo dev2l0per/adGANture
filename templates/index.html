@@ -64,6 +64,9 @@
                   </div>
                 </form>
             </div>
+            <div class="container" style="margin-top: 20px" id="result-container">
+              
+            </div>
         </div>
         
     </main>
@@ -73,6 +76,8 @@
         const selectedCategory = document.getElementById('selected-category');
         const selectedModel = document.getElementById('selected-model');
         const selectedEndpoint = document.getElementById('selected-endpoint');
+        const fileUploadForm = document.getElementById('file-upload-form');
+
         let modelInfo = {};
 
         const selectCategoryObserver = new MutationObserver((mutations) => {
@@ -143,7 +148,6 @@
 
         const selectEndpointObserver = new MutationObserver((mutations) => {
           const endpoint = mutations[0].target.textContent;
-          const fileUploadForm = document.getElementById('file-upload-form');
           const existedRow = fileUploadForm.getElementsByClassName('row');
           
           for (let i = 1; i < existedRow.length; ++i) {
@@ -152,7 +156,7 @@
           
           if (modelInfo['endpoints'][endpoint] != undefined) {
             const parameters = modelInfo['endpoints'][endpoint]['parameters'];
-            const submitButton = document.createElement('a');
+            const submitButton = document.createElement('button');
 
             fileUploadForm.classList.remove('hidden');
 
@@ -179,12 +183,17 @@
                 fileUploadForm.append(rowDiv);
               }
             }
+            const rowDiv = document.createElement('div');
+
+            rowDiv.classList.add('row');
 
             submitButton.classList.add('btn', 'btn-primary');
+            submitButton.id = 'submit';
             submitButton.textContent = 'Submit';
             submitButton.setAttribute('onclick', 'submitForm();');
 
-            fileUploadForm.append(submitButton);
+            rowDiv.append(submitButton);
+            fileUploadForm.append(rowDiv);
 
           } else {
             fileUploadForm.classList.add('hidden');
@@ -247,6 +256,51 @@
         inputImage.addEventListener('change', (e) => {
             uploadImagePreview(e.target);
         });
+
+        function submitForm() {
+          const submitButton = document.getElementById('submit');
+          const formRowList = fileUploadForm.getElementsByClassName('row');
+
+          submitButton.disabled = true;
+
+          const formData = new FormData();
+          formData.append('category', selectedCategory.textContent);
+          formData.append('model', selectedModel.textContent);
+          formData.append('endpoint', selectedEndpoint.textContent);
+          formData.append(inputImage.getAttribute('name'), inputImage.files[0]);
+          
+          for (let i = 1; i < formRowList.length - 1; ++i) {
+            const input = formRowList[i].querySelector('input');
+            formData.append(input.id, input.value);
+          }
+
+          fetch('/gan', {
+            method: 'POST',
+            body: formData,
+          }).then((response) => {
+            if (response.status == 200) {
+              return response;
+            } else {
+              throw Error('Server Error');
+            }
+          }).then((response) => {
+            return response.blob();
+          }).then((response) => {
+            const url = URL.createObjectURL(response);
+            const resultContainer = document.getElementById('result-container');
+            const img = document.createElement('img');
+
+            img.width = 300;
+            img.height = 300;
+            img.src = url;
+
+            resultContainer.append(img);
+            submitButton.disabled = false;
+          }).catch((e) => {
+            alert(e);
+            submitButton.disabled = false;
+          });
+        }
     </script>
 </body>
 
