@@ -126,7 +126,7 @@ def gan():
 @app.route("/category", methods=["GET"])
 def getCategory():
     result = []
-    for k, v in models.items():
+    for k in models.keys():
         result.append(k)
     return jsonify(result), 200
 
