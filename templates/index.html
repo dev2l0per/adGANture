@@ -154,7 +154,7 @@
 
         const selectEndpointObserver = new MutationObserver((mutations) => {
           const endpoint = mutations[0].target.textContent;
-          const existedRow = fileUploadForm.getElementsByClassName('row');
+          const existedRow = fileUploadForm.querySelectorAll('.row');
           
           for (let i = 1; i < existedRow.length; ++i) {
             fileUploadForm.removeChild(existedRow[i]);

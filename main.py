@@ -39,22 +39,6 @@ models = {
                 },
             },
         },
-        "StarGANv2": {
-            "url": "https://master-stargan-v2-frontend-gkswjdzz.endpoint.ainize.ai",
-            "endpoints": {
-                "predict": {
-                    "file": {
-                        "source": [],
-                    },
-                    "string": {
-                        "check_model": [
-                            "Human Face",
-                            "Animal Face",
-                        ],
-                    },
-                },
-            },
-        },
         "UGATIT": {
             "url": "https://master-ugatit-kmswlee.endpoint.ainize.ai",
             "endpoints": {
@@ -119,7 +103,7 @@ def gan():
     )
 
     if response.status_code != 200:
-        return Response("Model API Error", status=response.status_code)
+        return Response(response.content, status=response.status_code)
 
     return send_file(BytesIO(response.content), mimetype=mimeType)
 
@@ -153,4 +137,4 @@ def healthCheck():
     return Response("OK", status=200)
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port='1234')
+    app.run(debug=True, host='0.0.0.0', port='5000')
