@@ -10,6 +10,7 @@ models = {
     "Cartoonize": {
         "JoJoGAN": {
             "url": "https://main-jo-jo-gan-dev2l0per.endpoint.ainize.ai",
+            "ainize": "https://ainize.ai/dev2l0per/JoJoGAN?branch=main",
             "endpoints": {
                 "jojogan": {
                     "file": {
@@ -39,6 +40,7 @@ models = {
         },
         "AnimeGANv2": {
             "url": "https://main-animegan2-pytorch-dev2l0per.endpoint.ainize.ai",
+            "ainize": "https://ainize.ai/dev2l0per/animegan2-pytorch?branch=main",
             "endpoints": {
                 "animeganv2": {
                     "file": {
@@ -57,6 +59,7 @@ models = {
         },
         "UGATIT": {
             "url": "https://master-ugatit-kmswlee.endpoint.ainize.ai",
+            "ainize": "https://ainize.ai/kmswlee/UGATIT",
             "endpoints": {
                 "selfie2anime": {
                     "file": {
@@ -70,8 +73,9 @@ models = {
                 },
             },
         },
-        "Cartoonize": {
+        "Cartoonizer": {
             "url": "https://master-white-box-cartoonization-psi1104.endpoint.ainize.ai",
+            "ainize": "https://ainize.ai/psi1104/White-box-Cartoonization?branch=master",
             "endpoints": {
                 "predict": {
                     "file": {
@@ -88,10 +92,85 @@ models = {
         },
         "Cartoonify": {
             "url": "https://ainize-cartoonify-dev2l0per.endpoint.ainize.ai",
+            "ainize": "https://ainize.ai/dev2l0per/Cartoonify?branch=ainize",
             "endpoints": {
                 "cartoonify": {
                     "file": {
                         "file": [],
+                    },
+                },
+            },
+        },
+    },
+    "Neural Style Transfer": {
+        "neural-style-tf": {
+            "url": "https://master-neural-style-tf-jeong-hyun-su.endpoint.ainize.ai",
+            "ainize": "https://ainize.ai/Jeong-Hyun-Su/neural-style-tf",
+            "endpoints": {
+                "combine": {
+                    "file": {
+                        "content": [],
+                        "style": [],
+                    },
+                    "string": {
+                        "range": [
+                            '1',
+                            '2',
+                            '3',
+                            '4',
+                            '5',
+                        ],
+                    },
+                },
+            },
+        },
+    },
+    "Detection": {
+        "Instance Shadow Detection": {
+            "url": "https://master-instance-shadow-detection-gmlee329.endpoint.ainize.ai",
+            "ainize": "https://ainize.ai/gmlee329/InstanceShadowDetection",
+            "endpoints": {
+                "detection": {
+                    "file": {
+                        "image": [],
+                    },
+                },
+            },
+        },
+    },
+    "High Resolution Translation": {
+        "HiDT": {
+            "url": "https://master-hi-dt-psi1104.endpoint.ainize.ai",
+            "ainize": "https://ainize.ai/psi1104/HiDT?branch=master",
+            "endpoints": {
+                "predict": {
+                    "file": {
+                        "source": [],
+                    },
+                    "string": {
+                        "daytime": [
+                            "day1",
+                            "day2",
+                            "day3",
+                            "day4",
+                            "sunset1",
+                            "sunset2",
+                            "sunset3",
+                            "sunset4",
+                            "bluehour1",
+                            "bluehour2",
+                            "night1",
+                            "night2",
+                            "night3",
+                            "night4",
+                            "night5",
+                            "night6",
+                        ],
+                        "inference_size": [
+                            "256",
+                            "512",
+                            "1024",
+                        ],
                     },
                 },
             },
