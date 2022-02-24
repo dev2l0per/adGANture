@@ -16,7 +16,23 @@ models = {
                         "file": [],
                     },
                     "string": {
-                        "pretrained": [],
+                        "pretrained": [
+                            "arcane_caitlyn",
+                            "arcane_caitlyn_preserve_color",
+                            "arcane_jinx",
+                            "arcane_jinx_preserve_color",
+                            "arcane_multi",
+                            "arcane_multi_preserve_color",
+                            "disney",
+                            "disney_preserve_color",
+                            "jojo",
+                            "jojo_preserve_color",
+                            "jojo_yasuho",
+                            "jojo_yasuho_preserve_color",
+                            "supergirl",
+                            "supergirl_preserve_color",
+                            "art",
+                        ],
                     },
                 },
             },
@@ -66,6 +82,16 @@ models = {
                             "image",
                             "video",
                         ],
+                    },
+                },
+            },
+        },
+        "Cartoonify": {
+            "url": "https://ainize-cartoonify-dev2l0per.endpoint.ainize.ai",
+            "endpoints": {
+                "cartoonify": {
+                    "file": {
+                        "file": [],
                     },
                 },
             },
