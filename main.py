@@ -1,8 +1,10 @@
 from io import BytesIO
+from queue import Empty, Queue
+import threading
 from flask import (
     Flask, render_template, request, Response, jsonify, send_file
 )
-import requests
+import requests, time
 
 app = Flask(__name__)
 
@@ -178,8 +180,38 @@ models = {
     },
 }
 
+requestsQueue = Queue()
+BATCH_SIZE = 1
+CHECK_INTERVAL = 0.1
+
+def handle_requests_by_batch():
+    while True:
+        requestsBatch = []
+        while not (len(requestsBatch) >= BATCH_SIZE):
+            try:
+                requestsBatch.append(requestsQueue.get(timeout=CHECK_INTERVAL))
+            except Empty:
+                continue
+            
+            for request in requestsBatch:
+                request['output'] = processing(request['input'][0], request['input'][1], request['input'][2], request['input'][3])
+
+def processing(model, endpoint, requestFile, requestData):
+    try:
+        response = requests.post(url=str(model['url'] + '/' + endpoint),
+            files=requestFile,
+            data=requestData,
+        )
+
+        return response
+    except Exception as e:
+        return "error"
+
 @app.route("/gan", methods=["POST"])
 def gan():
+    if requestsQueue.qsize() > BATCH_SIZE:
+        return Response('Too Many Requests', status=429)
+
     try:
         selectedCategory = request.form['category']
         modelName = request.form['model']
@@ -201,16 +233,24 @@ def gan():
                     mimeType = request.files[parameter].content_type
     except:
         return Response("Error", status=400)
+    
+    req = {
+        'input': [model, endpoint, requestFile, requestData],
+    }
 
-    response = requests.post(url=str(model["url"] + "/" + endpoint),
-        files=requestFile,
-        data=requestData
-    )
+    requestsQueue.put(req)
 
-    if response.status_code != 200:
-        return Response(response.content, status=response.status_code)
+    while 'output' not in req:
+        time.sleep(CHECK_INTERVAL)
 
-    return send_file(BytesIO(response.content), mimetype=mimeType)
+    io = req['output']
+    
+    if io == "error":
+        return Response('Server Error', status=500)
+    elif io.status_code != 200:
+        return Response(io.content, status=io.status_code)
+
+    return send_file(BytesIO(io.content), mimetype=mimeType)
 
 @app.route("/category", methods=["GET"])
 def getCategory():
@@ -240,6 +280,8 @@ def main():
 @app.route("/health", methods=["GET"])
 def healthCheck():
     return Response("OK", status=200)
+
+threading.Thread(target=handle_requests_by_batch).start()
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port='5000')
