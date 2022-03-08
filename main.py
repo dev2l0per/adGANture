@@ -12,6 +12,7 @@ models = {
     "Cartoonize": {
         "JoJoGAN": {
             "url": "https://main-jo-jo-gan-dev2l0per.endpoint.ainize.ai",
+            "github": "https://github.com/dev2l0per/JoJoGAN",
             "ainize": "https://ainize.ai/dev2l0per/JoJoGAN?branch=main",
             "endpoints": {
                 "jojogan": {
@@ -42,6 +43,7 @@ models = {
         },
         "AnimeGANv2": {
             "url": "https://main-animegan2-pytorch-dev2l0per.endpoint.ainize.ai",
+            "github": "https://github.com/dev2l0per/animegan2-pytorch",
             "ainize": "https://ainize.ai/dev2l0per/animegan2-pytorch?branch=main",
             "endpoints": {
                 "animeganv2": {
@@ -61,6 +63,7 @@ models = {
         },
         "UGATIT": {
             "url": "https://master-ugatit-kmswlee.endpoint.ainize.ai",
+            "github": "https://github.com/kmswlee/UGATIT",
             "ainize": "https://ainize.ai/kmswlee/UGATIT",
             "endpoints": {
                 "selfie2anime": {
@@ -77,6 +80,7 @@ models = {
         },
         "Cartoonizer": {
             "url": "https://master-white-box-cartoonization-psi1104.endpoint.ainize.ai",
+            "github": "https://github.com/psi1104/White-box-Cartoonization",
             "ainize": "https://ainize.ai/psi1104/White-box-Cartoonization?branch=master",
             "endpoints": {
                 "predict": {
@@ -94,6 +98,7 @@ models = {
         },
         "Cartoonify": {
             "url": "https://ainize-cartoonify-dev2l0per.endpoint.ainize.ai",
+            "github": "https://github.com/dev2l0per/Cartoonify",
             "ainize": "https://ainize.ai/dev2l0per/Cartoonify?branch=ainize",
             "endpoints": {
                 "cartoonify": {
@@ -107,6 +112,7 @@ models = {
     "Neural Style Transfer": {
         "neural-style-tf": {
             "url": "https://master-neural-style-tf-jeong-hyun-su.endpoint.ainize.ai",
+            "github": "https://github.com/Jeong-Hyun-Su/neural-style-tf",
             "ainize": "https://ainize.ai/Jeong-Hyun-Su/neural-style-tf",
             "endpoints": {
                 "combine": {
@@ -130,6 +136,7 @@ models = {
     "Detection": {
         "Instance Shadow Detection": {
             "url": "https://master-instance-shadow-detection-gmlee329.endpoint.ainize.ai",
+            "github": "https://github.com/Jeong-Hyun-Su/neural-style-tf",
             "ainize": "https://ainize.ai/gmlee329/InstanceShadowDetection",
             "endpoints": {
                 "detection": {
@@ -143,6 +150,7 @@ models = {
     "High Resolution Translation": {
         "HiDT": {
             "url": "https://master-hi-dt-psi1104.endpoint.ainize.ai",
+            "github": "https://github.com/psi1104/HiDT",
             "ainize": "https://ainize.ai/psi1104/HiDT?branch=master",
             "endpoints": {
                 "predict": {
@@ -284,4 +292,4 @@ def healthCheck():
 threading.Thread(target=handle_requests_by_batch).start()
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port='5000')
+    app.run(debug=True, host='0.0.0.0', port='5000')

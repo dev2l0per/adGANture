@@ -47,7 +47,7 @@
                       2. Fill in form according to format
                     </li>
                     <li class="list-group-item">
-                      3. Click Submit !
+                      3. Click Submit and Compare another result
                     </li>
                 </ul>
             </div>
@@ -73,11 +73,11 @@
               <hr>
             </div>
             <div class="container" style="display: flex; justify-content: center; margin-top: 20px;">
-                <form id="file-upload-form" class="uploader" style="margin-right: 5%">
-
-                </form>
+              <form id="file-upload-form" class="uploader row justify-content-center" style="margin-right: 5%">
+                
+              </form>
             </div>
-            <div class="container" style="margin-top: 20px" id="result-container">
+            <div class="row row-cols-1 row-cols-md-4 g-4" style="margin-top: 20px" id="result-container">
               
             </div>
         </div>
@@ -91,6 +91,14 @@
         const fileUploadForm = document.getElementById('file-upload-form');
 
         let modelInfo = {};
+
+        function clearFileUploadForm() {
+          const existedRow = fileUploadForm.querySelectorAll('.row');
+          
+          for (let i = 0; i < existedRow.length; ++i) {
+            fileUploadForm.removeChild(existedRow[i]);
+          }
+        }
 
         const selectCategoryObserver = new MutationObserver((mutations) => {
           const category = mutations[0].target.textContent;
@@ -160,17 +168,37 @@
 
         const selectEndpointObserver = new MutationObserver((mutations) => {
           const endpoint = mutations[0].target.textContent;
-          const existedRow = fileUploadForm.querySelectorAll('.row');
           
-          for (let i = 0; i < existedRow.length; ++i) {
-            fileUploadForm.removeChild(existedRow[i]);
-          }
+          clearFileUploadForm();
           
           if (modelInfo['endpoints'][endpoint] != undefined) {
             const parameters = modelInfo['endpoints'][endpoint];
             const submitButton = document.createElement('button');
 
             fileUploadForm.classList.remove('hidden');
+
+            {
+              const rowDiv = document.createElement('div');
+              const colDiv = document.createElement('div');
+              const githubBtn = document.createElement('a');
+              const ainizeBtn = document.createElement('a');
+
+              rowDiv.classList.add('row');
+              rowDiv.setAttribute('style', 'margin-bottom: 10px;');
+              colDiv.classList.add('col', 'text-end');
+              githubBtn.classList.add('btn', 'btn-outline-primary', 'me-2');
+              githubBtn.textContent = "Github Repo";
+              githubBtn.setAttribute('href', modelInfo['github']);
+              githubBtn.setAttribute('target', '_blank');
+              ainizeBtn.classList.add('btn', 'btn-outline-primary', 'me-2');
+              ainizeBtn.textContent = 'API on Ainize';
+              ainizeBtn.setAttribute('href', modelInfo['ainize']);
+              ainizeBtn.setAttribute('target', '_blank');
+
+              colDiv.append(githubBtn, ainizeBtn);
+              rowDiv.append(colDiv);
+              fileUploadForm.append(rowDiv);
+            }
 
             for (parameter in parameters) {
               if (parameter == 'file') {
@@ -182,18 +210,20 @@
                   const img = document.createElement('img');
 
                   rowDiv.classList.add('row');
+                  rowDiv.setAttribute('style', 'margin-bottom: 10px;');
                   colDiv.classList.add('col-sm-10');
-                  label.classList.add('col-sm-2', 'col-form-label');
+                  label.classList.add('col-sm-2', 'col-form-label', 'text-break');
                   label.setAttribute('for', parameterName);
-                  label.textContent = parameterName
+                  label.setAttribute('style', 'margin: auto; text-align: center;');
+                  label.textContent = parameterName;
                   input.classList.add('input-image', 'form-control');
                   input.type = "file";
                   input.setAttribute('name', parameterName);
                   input.setAttribute('accept', 'image/*');
-                  input.setAttribute('style', "display: inline; width: auto;");
+                  input.setAttribute('style', "display: inline;");
                   img.classList.add('preview-image', 'd-none');
                   img.setAttribute('alt', parameterName);
-                  img.setAttribute('style', 'width: 300px; height: 300px;');
+                  img.setAttribute('style', 'width: 300px;');
                   input.setAttribute('onchange', 'uploadImagePreview(this);');
 
                   colDiv.append(input, img);
@@ -209,8 +239,10 @@
                   const dataList = document.createElement('datalist');
                   
                   rowDiv.classList.add('row');
-                  label.classList.add('col-sm-2', 'col-form-label');
+                  rowDiv.setAttribute('style', 'margin-bottom: 10px;');
+                  label.classList.add('col-sm-2', 'col-form-label', 'text-break');
                   label.setAttribute('for', parameterName);
+                  label.setAttribute('style', 'margin: auto; text-align: center;');
                   label.textContent = parameterName;
                   colDiv.classList.add('col-sm-10');
                   input.type = "text";
@@ -319,7 +351,7 @@
             formData.append(inputImage.getAttribute('name'), inputImage.files[0]);
           })
 
-          for (let i = inputImageList.length; i < formRowList.length - 1; ++i) {
+          for (let i = inputImageList.length + 1; i < formRowList.length - 1; ++i) {
             const key = formRowList[i].querySelector('label').getAttribute('for');
 
             const formSelect = formRowList[i].querySelector('input[list=' + key + ']');
@@ -340,14 +372,27 @@
           }).then((response) => {
             const url = URL.createObjectURL(response);
             const resultContainer = document.getElementById('result-container');
+            
+            const colDiv = document.createElement('div');
+            const cardDiv = document.createElement('div');
+            const cardHeaderDiv = document.createElement('div');
             const img = document.createElement('img');
+
+            colDiv.classList.add('col');
+            cardDiv.classList.add('card');
+            cardDiv.setAttribute('style', 'width: 300px;');
+            cardHeaderDiv.classList.add('card-header', 'text-center');
+            cardHeaderDiv.textContent = selectedModel.textContent;
+            img.classList.add('card-img-top');
 
             img.width = 300;
             img.height = 300;
             img.src = url;
 
-            resultContainer.append(img);
-            submitButton.disabled = false;
+            cardDiv.append(cardHeaderDiv, img);
+            colDiv.append(cardDiv);
+            resultContainer.append(colDiv);
+            clearFileUploadForm();
           }).catch((e) => {
             alert(e);
             submitButton.disabled = false;
