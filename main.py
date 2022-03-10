@@ -188,11 +188,11 @@ models = {
     },
 }
 
-def processing(model, endpoint, requestFile, requestData):
+def processing(model, endpoint, request_file, request_data):
     try:
         response = requests.post(url=str(model['url'] + '/' + endpoint),
-            files=requestFile,
-            data=requestData,
+            files=request_file,
+            data=request_data,
         )
 
         return response
@@ -202,51 +202,51 @@ def processing(model, endpoint, requestFile, requestData):
 @app.route("/gan", methods=["POST"])
 def gan():
     try:
-        selectedCategory = request.form['category']
-        modelName = request.form['model']
+        selected_category = request.form['category']
+        model_name = request.form['model']
     except:
         return Response("Empty Field", status=400)
 
     try:
-        model = models[selectedCategory][modelName]
+        model = models[selected_category][model_name]
         endpoint = request.form["endpoint"]
-        requestFile = dict()
-        requestData = dict()
+        request_file = dict()
+        request_data = dict()
         for type, parameters in model["endpoints"][endpoint].items():
             if type == "string":
                 for parameter in parameters.keys():
-                    requestData[parameter] = request.form[parameter]
+                    request_data[parameter] = request.form[parameter]
             elif type == "file":
                 for parameter in parameters.keys():
-                    requestFile[parameter] = (request.files[parameter].filename, request.files[parameter], request.files[parameter].content_type)
-                    mimeType = request.files[parameter].content_type
+                    request_file[parameter] = (request.files[parameter].filename, request.files[parameter], request.files[parameter].content_type)
+                    mime_type = request.files[parameter].content_type
     except:
         return Response("Error", status=400)
     
-    result = processing(model, endpoint, requestFile, requestData)
+    result = processing(model, endpoint, request_file, request_data)
     
     if result == "error":
         return Response('Server Error', status=500)
     elif result.status_code != 200:
         return Response(result.content, status=result.status_code)
 
-    return send_file(BytesIO(result.content), mimetype=mimeType)
+    return send_file(BytesIO(result.content), mimetype=mime_type)
 
 @app.route("/category", methods=["GET"])
-def getCategory():
+def get_category():
     result = []
     for k in models.keys():
         result.append(k)
     return jsonify(result), 200
 
 @app.route("/category/<category>", methods=["GET"])
-def getModelsInCategory(category):
+def get_models_in_category(category):
     if category not in models:
         return Response("Not Found Category", status=404)
     return jsonify(models[category]), 200
 
 @app.route("/category/<category>/<model>", methods=["GET"])
-def getModel(category, model):
+def get_model(category, model):
     if category not in models:
         return Response("Not Found Category", status=404)
     if model not in models[category]:
@@ -258,7 +258,7 @@ def main():
     return render_template("index.html")
 
 @app.route("/health", methods=["GET"])
-def healthCheck():
+def health_check():
     return Response("OK", status=200)
 
 if __name__ == "__main__":
