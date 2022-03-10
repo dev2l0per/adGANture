@@ -13,7 +13,7 @@ Test and Compare GAN Project API in Ainize.
 3. Click submit button and Check the result below.
 4. Submit other apis and Compare them.
 
-## How to register my GAN project in adGANture ?
+## How to register your GAN project in adGANture ?
 
 Create Issue or Pull Request including the url of the project in Ainize.
 Ainize project must contain Swagger API Document.
