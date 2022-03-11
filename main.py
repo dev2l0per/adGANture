@@ -1,10 +1,8 @@
 from io import BytesIO
-from queue import Empty, Queue
-import threading
 from flask import (
     Flask, render_template, request, Response, jsonify, send_file
 )
-import requests, time, json
+import requests, json
 
 app = Flask(__name__)
 
