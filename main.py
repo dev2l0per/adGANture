@@ -221,7 +221,7 @@ def gan():
                     request_file[parameter] = (request.files[parameter].filename, request.files[parameter], request.files[parameter].content_type)
                     mime_type = request.files[parameter].content_type
     except:
-        return Response("Error", status=400)
+        return Response("Bad Request Error", status=400)
     
     result = processing(model, endpoint, request_file, request_data)
     
