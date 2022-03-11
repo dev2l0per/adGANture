@@ -17,3 +17,10 @@ Test and Compare GAN Project API in Ainize.
 
 Create Issue or Pull Request including the url of the project in Ainize.
 Ainize project must contain Swagger API Document.
+
+## Usage as a Docker
+```
+1. docker build -t <Your Docker Image Name> .
+2. docker run -it -p 5000:5000 <Your Docker Image Name>
+3. Access http://localhost:5000
+```
