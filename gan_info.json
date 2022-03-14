@@ -126,7 +126,7 @@
   "Detection": {
       "Instance Shadow Detection": {
           "url": "https://master-instance-shadow-detection-gmlee329.endpoint.ainize.ai",
-          "github": "https://github.com/Jeong-Hyun-Su/neural-style-tf",
+          "github": "https://github.com/gmlee329/InstanceShadowDetection",
           "ainize": "https://ainize.ai/gmlee329/InstanceShadowDetection",
           "endpoints": {
               "detection": {
