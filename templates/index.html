@@ -289,9 +289,7 @@
                   const rowDiv = document.createElement('div');
                   const label = document.createElement('label');
                   const colDiv = document.createElement('div');
-                  const input = document.createElement('input');
-                  const dataList = document.createElement('datalist');
-                  
+
                   rowDiv.classList.add('row');
                   rowDiv.setAttribute('style', 'margin-bottom: 10px;');
                   label.classList.add('col-sm-2', 'col-form-label', 'text-break');
@@ -299,21 +297,53 @@
                   label.setAttribute('style', 'margin: auto; text-align: center;');
                   label.textContent = parameterName;
                   colDiv.classList.add('col-sm-10');
-                  input.type = "text";
-                  input.classList.add('form-control');
-                  input.setAttribute('list', parameterName);
-                  dataList.id = parameterName;
-
-                  for (example of parameters[parameter][parameterName]) {
-                    const option = document.createElement('option');
-
-                    option.value = example;
-                    option.label = example;
-
-                    dataList.append(option)
-                  }
                   
-                  colDiv.append(input, dataList);
+                  if (parameters[parameter][parameterName]['type'] == 'enum') {
+                    const select = document.createElement('select');
+
+                    select.classList.add('form-select');
+                    select.setAttribute('for', parameterName);
+
+
+                    parameters[parameter][parameterName]['data'].forEach((example, index) => {
+                      const option = document.createElement('option');
+
+                      option.value = example;
+                      option.label = example;
+
+                      if (index == 0) {
+                        option.selected = true;
+                      }
+
+                      select.append(option);
+                    });
+
+                    colDiv.append(select);
+                  } else if (parameters[parameter][parameterName]['type'] == 'custom') {
+                    const input = document.createElement('input');
+                    const dataList = document.createElement('datalist');
+                  
+                    input.type = "text";
+                    input.classList.add('form-control');
+                    input.setAttribute('list', parameterName);
+                    dataList.id = parameterName;
+
+                    parameters[parameter][parameterName]['data'].forEach((example, index) => {
+                      const option = document.createElement('option');
+
+                      option.value = example;
+                      option.label = example;
+
+                      if (index == 0) {
+                        input.value = example;
+                      }
+
+                      dataList.append(option)
+                    });
+
+                    colDiv.append(input, dataList);
+                  }
+                   
                   rowDiv.append(label, colDiv);
                   fileUploadForm.append(rowDiv);
                 }
@@ -411,7 +441,7 @@
           for (let i = inputImageList.length + 1; i < formRowList.length - 1; ++i) {
             const key = formRowList[i].querySelector('label').getAttribute('for');
 
-            const formSelect = formRowList[i].querySelector('input[list=' + key + ']');
+            const formSelect = formRowList[i].querySelector('input[list=' + key + '], select[for=' + key + ']');
             formData.append(key, formSelect.value);
           }
 
