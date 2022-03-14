@@ -10,23 +10,26 @@
                       "file": []
                   },
                   "string": {
-                      "pretrained": [
-                          "arcane_caitlyn",
-                          "arcane_caitlyn_preserve_color",
-                          "arcane_jinx",
-                          "arcane_jinx_preserve_color",
-                          "arcane_multi",
-                          "arcane_multi_preserve_color",
-                          "disney",
-                          "disney_preserve_color",
-                          "jojo",
-                          "jojo_preserve_color",
-                          "jojo_yasuho",
-                          "jojo_yasuho_preserve_color",
-                          "supergirl",
-                          "supergirl_preserve_color",
-                          "art"
-                      ]
+                      "pretrained": {
+                          "type": "enum",
+                          "data": [
+                            "arcane_caitlyn",
+                            "arcane_caitlyn_preserve_color",
+                            "arcane_jinx",
+                            "arcane_jinx_preserve_color",
+                            "arcane_multi",
+                            "arcane_multi_preserve_color",
+                            "disney",
+                            "disney_preserve_color",
+                            "jojo",
+                            "jojo_preserve_color",
+                            "jojo_yasuho",
+                            "jojo_yasuho_preserve_color",
+                            "supergirl",
+                            "supergirl_preserve_color",
+                            "art"
+                        ]
+                      }
                   }
               }
           }
@@ -41,12 +44,15 @@
                       "file": []
                   },
                   "string": {
-                      "pretrained": [
-                          "celeba_distill",
-                          "face_paint_512_v1",
-                          "face_paint_512_v2",
-                          "paprika"
-                      ]
+                      "pretrained": {
+                          "type": "enum",
+                          "data": [
+                            "celeba_distill",
+                            "face_paint_512_v1",
+                            "face_paint_512_v2",
+                            "paprika"
+                        ]
+                      }
                   }
               }
           }
@@ -78,10 +84,13 @@
                       "source": []
                   },
                   "string": {
-                      "file_type": [
-                          "image",
-                          "video"
-                      ]
+                      "file_type": {
+                          "type": "enum",
+                          "data": [
+                            "image",
+                            "video"
+                        ]
+                      }
                   }
               }
           }
@@ -111,13 +120,16 @@
                       "style": []
                   },
                   "string": {
-                      "range": [
-                          "1",
-                          "2",
-                          "3",
-                          "4",
-                          "5"
-                      ]
+                      "range": {
+                          "type": "enum",
+                          "data": [
+                            "1",
+                            "2",
+                            "3",
+                            "4",
+                            "5"
+                        ]
+                      }
                   }
               }
           }
@@ -148,29 +160,35 @@
                       "source": []
                   },
                   "string": {
-                      "daytime": [
-                          "day1",
-                          "day2",
-                          "day3",
-                          "day4",
-                          "sunset1",
-                          "sunset2",
-                          "sunset3",
-                          "sunset4",
-                          "bluehour1",
-                          "bluehour2",
-                          "night1",
-                          "night2",
-                          "night3",
-                          "night4",
-                          "night5",
-                          "night6"
-                      ],
-                      "inference_size": [
-                          "256",
-                          "512",
-                          "1024"
-                      ]
+                      "daytime": {
+                          "type": "enum",
+                          "data": [
+                            "day1",
+                            "day2",
+                            "day3",
+                            "day4",
+                            "sunset1",
+                            "sunset2",
+                            "sunset3",
+                            "sunset4",
+                            "bluehour1",
+                            "bluehour2",
+                            "night1",
+                            "night2",
+                            "night3",
+                            "night4",
+                            "night5",
+                            "night6"
+                        ]
+                      },
+                      "inference_size": {
+                          "type": "enum",
+                          "data": [
+                            "256",
+                            "512",
+                            "1024"
+                        ]
+                      }
                   }
               }
           }
