@@ -1,6 +1,6 @@
 # adGANture
 
-[![Run on Ainize](https://ainize.ai/images/run_on_ainize_button.svg)](https://q-av2-ad-ga-nture-dev2l0per.endpoint.ainize.ai/)<br>
+[![Run on Ainize](https://ainize.ai/images/run_on_ainize_button.svg)](https://main-ad-ga-nture-dev2l0per.endpoint.ainize.ai)<br>
 
 Test and Compare GAN Project API in Ainize.
 
