@@ -4,7 +4,7 @@
 
 Test and Compare GAN Project API in Ainize.
 
-<img width="1024" alt="logo" src="https://raw.githubusercontent.com/dev2l0per/adGANture/api/public/gitdemo.png">
+<img width="1024" alt="logo" src="https://raw.githubusercontent.com/dev2l0per/adGANture/main/public/gitdemo.png">
 
 ## How to use ?
 
